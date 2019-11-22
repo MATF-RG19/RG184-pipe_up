@@ -1,2 +1,3 @@
 # RG184-pipe_up
-Pipe_up
+
+Projekat je radjen u dve grane: 'master' i 'feature'
