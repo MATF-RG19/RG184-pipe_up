@@ -5,29 +5,31 @@
 //Basic Headers
 #include<iostream>
 #include<cstdlib>
-
+//Testing-purpose functions
 void draw_grid();
-
+//Main callback Functions
 void display();
 void keyboard(unsigned char keystroke, int mousex, int mousey);
 
+//global flags and variables
 bool gridFlag = false;
 
 int main(int argc, char ** argv)
 {
+    //Init Functions
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(300,300);
     glutInitWindowPosition(100,100);
     glutCreateWindow("PipeUP!");
-    
     glClearColor(0,0,0,0);
     glEnable(GL_DEPTH_TEST);
-
+    //registering Callback functions
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
-    glutMainLoop();
 
+
+    glutMainLoop();
     return 0;
 }
 
@@ -45,11 +47,11 @@ void keyboard(unsigned char keystroke, int mousex, int mousey)
 {
     switch(keystroke)
     {
-        case 32:
+        case 32: //Space
             gridFlag = !gridFlag;
             glutPostRedisplay();
             break;
-        case 27:
+        case 27: //Esc
             exit(EXIT_SUCCESS);
             break;
     }
