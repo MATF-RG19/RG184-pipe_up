@@ -1,5 +1,5 @@
 pipe:
-	g++ -o pipe_up.out main.cpp -g -Wall -std=c++11 -lglut -lGL -lGLU
+	g++ -o pipe_up.out *.cpp -g -Wall -std=c++11 -lglut -lGL -lGLU; ./pipe_up.out
 
 .PHONY: clean
 
