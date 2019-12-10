@@ -16,11 +16,10 @@ void placeCamera();
 //Callback funkcije
 void display();
 void keyboard(unsigned char keystroke, int mousex, int mousey);
-void specialKeyboard(int key, int x, int y);
 
 //globalflags, vars
 GLUquadric* postolje;
-GLdouble camx,camy,camz,angleHorizontal=0, angleVertical=0;
+GLdouble camx,camy,camz;
 bool gridFlag = false;
 
 int main(int argc, char ** argv)
@@ -33,11 +32,28 @@ int main(int argc, char ** argv)
     glutCreateWindow("PipeUP!");
     glClearColor(0,0,0,0);
     glEnable(GL_DEPTH_TEST);
-    //Povezivanje callback funkcija
+
+//  Povezivanje callback funkcija
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
-    glutSpecialFunc(specialKeyboard);
 
+    
+    //Osvetljenje
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    //Podesavanje osvetljenja
+    GLfloat ambi[] = {0.2,.2,.2,1};
+    GLfloat diff[] = {.8,.8,.8,1};
+    GLfloat spec[] = {1,1,1,1};
+    glLightfv(GL_LIGHT0,GL_AMBIENT, ambi);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE, diff);
+    glLightfv(GL_LIGHT0,GL_SPECULAR, spec);
+
+    //Pozicija svetla
+    GLfloat lightpos[] = {0,10,4,1};
+    glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
     pipe_init();
     
     glutMainLoop();
@@ -59,25 +75,7 @@ void display()
 
     glutSwapBuffers();
 }
-void specialKeyboard(int key, int x, int y)
-{
-    switch(key)
-    {
-        case GLUT_KEY_UP:
-            angleVertical+=5;
-            break;
-        case GLUT_KEY_DOWN:
-            angleVertical-=5;
-            break;
-        case GLUT_KEY_LEFT:
-            angleHorizontal-=5;
-            break;
-        case GLUT_KEY_RIGHT:
-            angleHorizontal+=5;
-            break;
-    }
-    glutPostRedisplay();
-}
+
 void keyboard(unsigned char keystroke, int mousex, int mousey)
 {
     switch(keystroke)
@@ -114,12 +112,16 @@ void draw_grid()
 }
 
 void placeCamera(){
-    camx = 5*cos(angleHorizontal*PI/180)*sin(angleVertical*PI/180);
-    camy = 5*sin(angleHorizontal*PI/180)*sin(angleVertical*PI/180);
-    camz = 5*cos(angleVertical*PI/180);
+    camx = 0;
+    camy = 1;
+    camz = 2;
+
+    //Definisanje projekcije
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(60,1,0.1,10);
+
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(camx,camy,camz,0,0,0,0,1,0);
@@ -129,34 +131,46 @@ void pipe_init()
 {
     postolje = gluNewQuadric();
     gluQuadricNormals(postolje,GLU_SMOOTH);
-    gluQuadricDrawStyle(postolje,GLU_LINE);
+    //gluQuadricDrawStyle(postolje,GLU_LINE);
 }
 void draw()
 {
-    //Pokusaj crtanja cevi;
+    //Postolje
+    GLfloat crna[] = {0,0,0,1};
+    GLfloat zuta[] = {1,1,0,1};
+    GLfloat bela[] = {1,1,1,1};
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT,bela);
+    glMaterialfv(GL_FRONT,GL_DIFFUSE,zuta);
+    glMaterialfv(GL_FRONT,GL_SPECULAR,bela);
+    glMaterialf(GL_FRONT,GL_SHININESS,60);
+
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glColor3f(0,1,0);
     glRotatef(90,-1,0,0);
-    gluCylinder(postolje,1,1,.5,10,10);
+    gluCylinder(postolje,.4,.4,.2,10,10);
     glPopMatrix();
-    /*
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        glColor3f(1,0,0);
-        glVertex3f(0,.6,0);
-        glColor3f(1,1,0);
-        glVertex3f(.3,.3,0);
-        glColor3f(0,1,0);
-        glVertex3f(.15,0,0);
-        glColor3f(0,1,1);
-        glVertex3f(-.15,0,0);
-        glColor3f(0,0,1);
-        glVertex3f(-.3,.3,0);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0,0,0);
+    for(int i = 0; i < 11; i ++)
+        {
+            glVertex3f(sin(i*36*PI/180)*.4,0,cos(i*36*PI/180)*.4);
+        }
     glEnd();
     glPopMatrix();
-    */
+    glPushMatrix();
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0,.2,0);
+    for(int i = 0; i < 11; i ++)
+        {
+            glVertex3f(sin(i*36*PI/180)*.4,.2,cos(i*36*PI/180)*.4);
+        }
+    glEnd();
+    glPopMatrix();
+    glTranslatef(0,.2,0);
+    glutSolidSphere(.2,10,10);
+    glPushMatrix();
 }
