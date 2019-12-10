@@ -1,23 +1,35 @@
-//GL headers
+//GL
 #include<GL/gl.h>
 #include<GL/glut.h>
-
-//Other
+//C++
 #include<iostream>
 #include<cstdlib>
-
+//Project headers
 #include "headers/camera.hpp"
 #include "headers/drawing.hpp"
 #include "headers/callbacks.hpp"
+#include "headers/lighting.hpp"
 
-//EXTERN
+//External vars
 extern GLUquadric* postolje;
 extern GLdouble camx,camy,camz;
 extern bool gridFlag;
+void glutInitialization(int argc, char ** argv);
+void registerCallbacks();
 
 int main(int argc, char ** argv)
 {
-    //Init
+    glutInitialization(argc, argv);
+    registerCallbacks();
+    createLighting();
+    pipe_quad_init();
+
+    glutMainLoop();
+    return 0;
+}
+
+void glutInitialization(int argc, char ** argv)
+{
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(300,300);
@@ -25,31 +37,10 @@ int main(int argc, char ** argv)
     glutCreateWindow("PipeUP!");
     glClearColor(0,0,0,0);
     glEnable(GL_DEPTH_TEST);
-
-//  Povezivanje callback funkcija
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-
-    
-    //Osvetljenje
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    //Podesavanje osvetljenja
-    GLfloat ambi[] = {0.2,.2,.2,1};
-    GLfloat diff[] = {.8,.8,.8,1};
-    GLfloat spec[] = {1,1,1,1};
-    glLightfv(GL_LIGHT0,GL_AMBIENT, ambi);
-    glLightfv(GL_LIGHT0,GL_DIFFUSE, diff);
-    glLightfv(GL_LIGHT0,GL_SPECULAR, spec);
-
-    //Pozicija svetla
-    GLfloat lightpos[] = {0,10,4,1};
-    glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
-    pipe_init();
-    
-    glutMainLoop();
-    return 0;
 }
 
+void registerCallbacks()
+{
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+}

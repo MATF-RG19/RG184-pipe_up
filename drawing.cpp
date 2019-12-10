@@ -7,6 +7,13 @@
 
 GLUquadric* postolje;
 
+void pipe_quad_init()
+{
+    postolje = gluNewQuadric();
+    gluQuadricNormals(postolje,GLU_SMOOTH);
+    //gluQuadricDrawStyle(postolje,GLU_LINE);
+}
+
 void draw_grid()
 {
     GLfloat len = 2;
@@ -26,13 +33,6 @@ void draw_grid()
     glutBitmapCharacter(FONT,'y');
     glRasterPos3f(0,0,len);
     glutBitmapCharacter(FONT,'z');
-}
-
-void pipe_init()
-{
-    postolje = gluNewQuadric();
-    gluQuadricNormals(postolje,GLU_SMOOTH);
-    //gluQuadricDrawStyle(postolje,GLU_LINE);
 }
 
 void draw()
